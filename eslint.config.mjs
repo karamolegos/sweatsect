@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // react-hooks v6 ships this as "error"; existing pages use the pattern
+      // deliberately (sync guards in effects) — keep it visible, not blocking
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

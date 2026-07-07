@@ -24,7 +24,12 @@ export default function LandingPage() {
         body: JSON.stringify({ code: code.trim().toUpperCase() }),
       });
 
-      const data = (await res.json()) as { valid: boolean; error?: string };
+      const data = (await res.json()) as {
+        valid: boolean;
+        gym_id?: string;
+        gym_name?: string;
+        error?: string;
+      };
 
       if (data.valid) {
         // Save gym info for the auth step

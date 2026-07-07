@@ -10,10 +10,16 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+// gyms/profiles/commissions live in the ss-sourcing project's sweat_eshop
+// schema (migrated 2026-07-07 off the standalone sweat-sect project — see
+// shared-infra/crm-billing-plan.md § Supabase Consolidation), not `public`.
+const SCHEMA_OPTS = { db: { schema: "sweat_eshop" as const } };
+
 // Browser / client components — respects RLS
 // Uses implicit flow so magic links work across devices (email app → any browser)
 export function createBrowserClient() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    ...SCHEMA_OPTS,
     auth: {
       flowType: "implicit",
       detectSessionInUrl: true,
@@ -24,7 +30,7 @@ export function createBrowserClient() {
 
 // Server / API routes — bypasses RLS. Never expose to browser.
 export function createServerClient() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, SCHEMA_OPTS);
 }
 
 // Gym code validation

@@ -5,14 +5,17 @@ export const runtime = "edge";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  // Named idOrSlug because Next.js requires one dynamic-segment name across
+  // /api/products/* ('slug' here clashed with '[id]/variations'); this
+  // endpoint treats it as a slug.
+  { params }: { params: Promise<{ idOrSlug: string }> }
 ) {
   try {
-    const { slug } = await params;
+    const { idOrSlug: slug } = await params;
     const product = await getProduct(slug);
     return NextResponse.json(product);
   } catch (err) {
-    console.error("[api/products/[slug]]", err);
+    console.error("[api/products/[idOrSlug]]", err);
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 }

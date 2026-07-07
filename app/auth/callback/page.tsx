@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase";
 
@@ -60,8 +61,12 @@ export default function CallbackPage() {
           .eq("user_id", session.user.id)
           .single();
 
-        if (profile?.gyms) {
-          const g = profile.gyms as { code: string };
+        // supabase-js types joined relations as array; runtime returns object
+        // for a to-one FK — handle both shapes
+        const g = (Array.isArray(profile?.gyms) ? profile?.gyms[0] : profile?.gyms) as
+          | { code: string }
+          | undefined;
+        if (g?.code) {
           sessionStorage.setItem("sect_code", g.code);
         }
       }
@@ -85,12 +90,12 @@ export default function CallbackPage() {
         <p className="text-xs text-white/30 tracking-[0.15em] text-center mb-10">
           {errorMsg}
         </p>
-        <a
+        <Link
           href="/"
           className="text-[10px] text-white/20 tracking-[0.4em] uppercase hover:text-white/40 transition-colors"
         >
           Start over
-        </a>
+        </Link>
       </main>
     );
   }

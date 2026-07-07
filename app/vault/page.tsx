@@ -31,8 +31,12 @@ export default function VaultPage() {
           .select("gym_id, gyms(code)")
           .eq("user_id", session.user.id)
           .single();
-        if (profile?.gyms) {
-          const g = profile.gyms as { code: string };
+        // supabase-js types joined relations as array; runtime returns object
+        // for a to-one FK — handle both shapes
+        const g = (Array.isArray(profile?.gyms) ? profile?.gyms[0] : profile?.gyms) as
+          | { code: string }
+          | undefined;
+        if (g?.code) {
           code = g.code;
           sessionStorage.setItem("sect_code", code);
         } else {
