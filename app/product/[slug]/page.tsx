@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import type { WCProduct, WCVariation } from "@/types";
+import { ZoomImage } from "@/components/ZoomImage";
+import { GymBar } from "@/components/GymBar";
 
 export default function ProductPage() {
   const router = useRouter();
@@ -16,10 +18,11 @@ export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     // Guard
-    if (!sessionStorage.getItem("sect_code")) {
+    if (!localStorage.getItem("sect_code")) {
       router.replace("/");
       return;
     }
@@ -35,6 +38,26 @@ export default function ProductPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [params.slug, router]);
+
+  useEffect(() => {
+    if (!product) return;
+    try {
+      const favorites: number[] = JSON.parse(localStorage.getItem("sect_favorites") || "[]");
+      setSaved(favorites.includes(product.id));
+    } catch {
+      // ignore malformed storage
+    }
+  }, [product]);
+
+  function toggleFavorite() {
+    if (!product) return;
+    const favorites: number[] = JSON.parse(localStorage.getItem("sect_favorites") || "[]");
+    const next = saved
+      ? favorites.filter((id) => id !== product.id)
+      : [...favorites, product.id];
+    localStorage.setItem("sect_favorites", JSON.stringify(next));
+    setSaved(!saved);
+  }
 
   useEffect(() => {
     if (!selectedSize || !variations.length) return;
@@ -83,16 +106,16 @@ export default function ProductPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <span className="text-white/20 text-xs tracking-[0.4em]">—</span>
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <span className="text-black/20 text-xs tracking-[0.4em]">—</span>
       </main>
     );
   }
 
   if (!product) {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <span className="text-white/30 text-xs tracking-[0.4em] uppercase">
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <span className="text-black/30 text-xs tracking-[0.4em] uppercase">
           Not found
         </span>
       </main>
@@ -108,13 +131,16 @@ export default function ProductPage() {
     isInStock &&
     (sizes.length === 0 || (selectedVariation?.stock_status === "instock"));
 
+  const activePhoto = product.images?.[activeImage];
+
   return (
-    <main className="min-h-screen bg-black px-6 py-16">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-white px-6 py-6">
+      <GymBar />
+      <div className="max-w-5xl mx-auto pt-6">
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-[10px] text-white/20 tracking-[0.4em] uppercase hover:text-white/50 transition-colors mb-12 block"
+          className="text-[11px] text-black/40 tracking-[0.1em] uppercase hover:text-black transition-colors mb-10 block"
         >
           ← Back
         </button>
@@ -122,32 +148,30 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {/* Images */}
           <div>
-            <div className="relative aspect-[3/4] bg-zinc-950 overflow-hidden mb-2">
-              {product.images?.[activeImage] ? (
-                <Image
-                  src={product.images[activeImage].src}
-                  alt={product.images[activeImage].alt || product.name}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white/10 text-xs tracking-[0.4em]">—</span>
-                </div>
-              )}
-            </div>
+            {activePhoto ? (
+              <ZoomImage
+                key={activePhoto.id}
+                src={activePhoto.src}
+                alt={activePhoto.alt || product.name}
+                priority
+              />
+            ) : (
+              <div className="relative aspect-[3/4] bg-zinc-50 overflow-hidden mb-2 flex items-center justify-center">
+                <span className="text-black/10 text-xs tracking-[0.4em]">—</span>
+              </div>
+            )}
 
             {/* Thumbnail strip */}
             {product.images.length > 1 && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-3">
                 {product.images.map((img, i) => (
                   <button
                     key={img.id}
                     onClick={() => setActiveImage(i)}
-                    className={`relative w-14 aspect-square overflow-hidden transition-opacity ${
-                      i === activeImage ? "opacity-100" : "opacity-30 hover:opacity-60"
+                    className={`relative w-14 aspect-square overflow-hidden border transition-colors ${
+                      i === activeImage
+                        ? "border-black"
+                        : "border-transparent opacity-50 hover:opacity-100"
                     }`}
                   >
                     <Image
@@ -166,20 +190,18 @@ export default function ProductPage() {
           {/* Product info */}
           <div className="flex flex-col justify-between">
             <div>
-              <p className="text-xs text-white/25 tracking-[0.4em] uppercase mb-3">
-                SWEAT SECT
+              <p className="text-[11px] text-black/40 tracking-[0.3em] uppercase mb-3">
+                Sweat Sect
               </p>
-              <h1 className="text-base text-white tracking-[0.2em] uppercase mb-2">
-                {product.name}
-              </h1>
-              <p className="text-sm text-white/50 mb-8">
+              <h1 className="text-lg text-black mb-2">{product.name}</h1>
+              <p className="text-sm text-black/60 mb-8">
                 €{parseFloat(product.price).toFixed(2)}
               </p>
 
               {/* Size selector */}
               {sizes.length > 0 && (
                 <div className="mb-8">
-                  <p className="text-[10px] text-white/30 tracking-[0.4em] uppercase mb-4">
+                  <p className="text-[10px] text-black/40 tracking-[0.3em] uppercase mb-4">
                     Size
                   </p>
                   <div className="flex gap-2 flex-wrap">
@@ -200,14 +222,14 @@ export default function ProductPage() {
                           onClick={() => !outOfStock && setSelectedSize(size)}
                           disabled={!!outOfStock}
                           className={`
-                            text-[11px] tracking-[0.2em] uppercase px-4 py-2 border
+                            text-[12px] px-4 py-2 border
                             transition-all duration-150
                             ${
                               selectedSize === size
-                                ? "border-white text-white"
+                                ? "border-black bg-black text-white"
                                 : outOfStock
-                                ? "border-white/10 text-white/15 cursor-not-allowed"
-                                : "border-white/20 text-white/50 hover:border-white/50 hover:text-white/80"
+                                ? "border-black/10 text-black/20 cursor-not-allowed line-through"
+                                : "border-black/20 text-black/70 hover:border-black"
                             }
                           `}
                         >
@@ -222,32 +244,49 @@ export default function ProductPage() {
               {/* Short description */}
               {product.short_description && (
                 <div
-                  className="text-xs text-white/30 leading-relaxed mb-8 [&_p]:mb-2"
+                  className="text-[13px] text-black/50 leading-relaxed mb-8 [&_p]:mb-2"
                   dangerouslySetInnerHTML={{ __html: product.short_description }}
                 />
               )}
             </div>
 
-            {/* Add to bag */}
-            <button
-              onClick={addToCart}
-              disabled={!canAdd || adding || (sizes.length > 0 && !selectedSize)}
-              className="
-                text-xs tracking-[0.4em] uppercase py-4 w-full border
-                transition-all duration-200
-                border-white/20 text-white/60
-                hover:border-white/50 hover:text-white
-                disabled:opacity-20 disabled:cursor-not-allowed
-              "
-            >
-              {adding
-                ? "—"
-                : !isInStock
-                ? "Sold Out"
-                : sizes.length > 0 && !selectedSize
-                ? "Select Size"
-                : "Add to Bag"}
-            </button>
+            {/* Add to bag + wishlist */}
+            <div className="flex gap-2">
+              <button
+                onClick={addToCart}
+                disabled={!canAdd || adding || (sizes.length > 0 && !selectedSize)}
+                className="
+                  flex-1 text-xs tracking-[0.15em] uppercase py-4
+                  transition-all duration-200
+                  bg-black text-white
+                  hover:bg-black/80
+                  disabled:bg-black/10 disabled:text-black/30 disabled:cursor-not-allowed
+                "
+              >
+                {adding
+                  ? "—"
+                  : !isInStock
+                  ? "Sold Out"
+                  : sizes.length > 0 && !selectedSize
+                  ? "Select Size"
+                  : "Add to Bag"}
+              </button>
+              <button
+                onClick={toggleFavorite}
+                aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
+                className="w-14 flex items-center justify-center border border-black/20 hover:border-black transition-colors"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-[18px] h-[18px]"
+                  fill={saved ? "#000" : "none"}
+                  stroke="#000"
+                  strokeWidth={1.5}
+                >
+                  <path d="M12 20.5s-7.5-4.6-10-9.1C.4 8.1 1.8 4.5 5.2 3.6c2-.5 4 .3 5.3 2 .5.6.9 1.3 1.5 1.3s1-.7 1.5-1.3c1.3-1.7 3.3-2.5 5.3-2 3.4.9 4.8 4.5 3.2 7.8-2.5 4.5-10 9.1-10 9.1Z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

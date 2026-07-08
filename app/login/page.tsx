@@ -2,30 +2,28 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabase";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
-export default function AuthPage() {
+/**
+ * Returning-member login — no gym code required here. Only works for
+ * accounts that already signed up (locked a gym) via the code-entry flow;
+ * /auth/callback rejects anyone who reaches it via this page without an
+ * existing profile.
+ */
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const [gymName, setGymName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Must have come from a valid code entry
-    const code = localStorage.getItem("sect_code");
-    if (!code) {
-      router.replace("/");
-      return;
-    }
+    localStorage.setItem("sect_auth_intent", "login");
 
-    // This is a signup (post gym-code) flow — /auth/callback locks the gym
-    localStorage.setItem("sect_auth_intent", "signup");
-
-    // Check if already authenticated — skip straight to vault
+    // Already signed in? Skip straight to vault.
     const supabase = createBrowserClient();
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
@@ -33,7 +31,6 @@ export default function AuthPage() {
       }
     });
 
-    setGymName(localStorage.getItem("sect_gym_name"));
     inputRef.current?.focus();
   }, [router]);
 
@@ -51,12 +48,14 @@ export default function AuthPage() {
       email: email.trim().toLowerCase(),
       options: {
         emailRedirectTo: `${origin}/auth/callback`,
-        shouldCreateUser: true,
+        // Login-only — do not create a new account here. If this email
+        // never signed up, Supabase errors immediately (no email sent).
+        shouldCreateUser: false,
       },
     });
 
     if (authError) {
-      setError("Something went wrong. Try again.");
+      setError("No account found for that email. Enter your gym's code to sign up first.");
       setLoading(false);
       return;
     }
@@ -86,7 +85,7 @@ export default function AuthPage() {
           </button>
         </div>
 
-        <p className="absolute bottom-8 text-[10px] text-black/20 tracking-[0.4em] uppercase">
+        <p className="absolute bottom-8 text-xs text-black/25 tracking-[0.4em] uppercase">
           SWEAT SECT
         </p>
       </main>
@@ -96,14 +95,8 @@ export default function AuthPage() {
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 page-in">
       <div className="w-full max-w-xs">
-        {gymName && (
-          <p className="text-[10px] text-black/30 tracking-[0.4em] uppercase text-center mb-12">
-            {gymName}
-          </p>
-        )}
-
         <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase text-center mb-10">
-          Create your account
+          Log in
         </p>
 
         <div className="mb-6">
@@ -139,7 +132,7 @@ export default function AuthPage() {
           />
 
           {error && (
-            <p className="text-xs text-red-600 tracking-[0.2em] uppercase">
+            <p className="text-xs text-red-600 tracking-[0.1em] text-center">
               {error}
             </p>
           )}
@@ -158,9 +151,16 @@ export default function AuthPage() {
             {loading ? "—" : "Send link"}
           </button>
         </form>
+
+        <Link
+          href="/"
+          className="block mt-10 text-center text-xs text-black/40 tracking-[0.15em] hover:text-black transition-colors"
+        >
+          New here? Enter your gym&apos;s code
+        </Link>
       </div>
 
-      <p className="absolute bottom-8 text-[10px] text-black/20 tracking-[0.4em] uppercase">
+      <p className="absolute bottom-8 text-xs text-black/25 tracking-[0.4em] uppercase">
         SWEAT SECT
       </p>
     </main>

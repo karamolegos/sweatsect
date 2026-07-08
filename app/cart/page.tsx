@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { CartItem } from "@/types";
+import { GymBar } from "@/components/GymBar";
 
 export default function CartPage() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function CartPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("sect_code")) {
+    if (!localStorage.getItem("sect_code")) {
       router.replace("/");
       return;
     }
@@ -40,30 +41,31 @@ export default function CartPage() {
 
   if (!loaded) {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <span className="text-white/20 text-xs tracking-[0.4em]">—</span>
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <span className="text-black/20 text-xs tracking-[0.4em]">—</span>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black px-6 py-16">
-      <div className="max-w-xl mx-auto">
+    <main className="min-h-screen bg-white px-6 py-6">
+      <GymBar />
+      <div className="max-w-xl mx-auto pt-10">
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-[10px] text-white/20 tracking-[0.4em] uppercase hover:text-white/50 transition-colors mb-12 block"
+          className="text-[10px] text-black/30 tracking-[0.4em] uppercase hover:text-black transition-colors mb-12 block"
         >
           ← Continue Shopping
         </button>
 
-        <p className="text-[10px] text-white/25 tracking-[0.5em] uppercase mb-10">
+        <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase mb-10">
           Your Bag
         </p>
 
         {items.length === 0 ? (
           <div className="py-24 text-center">
-            <p className="text-xs text-white/20 tracking-[0.3em] uppercase">
+            <p className="text-xs text-black/30 tracking-[0.3em] uppercase">
               Empty.
             </p>
           </div>
@@ -74,11 +76,11 @@ export default function CartPage() {
               {items.map((item, i) => (
                 <div
                   key={`${item.product_id}-${item.variation_id ?? 0}`}
-                  className="flex gap-4 items-start border-b border-white/8 pb-6"
+                  className="flex gap-4 items-start border-b border-black/10 pb-6"
                 >
                   {/* Image */}
                   {item.image ? (
-                    <div className="relative w-16 aspect-[3/4] flex-shrink-0 bg-zinc-950 overflow-hidden">
+                    <div className="relative w-16 aspect-[3/4] flex-shrink-0 bg-zinc-100 overflow-hidden">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -88,23 +90,23 @@ export default function CartPage() {
                       />
                     </div>
                   ) : (
-                    <div className="w-16 aspect-[3/4] flex-shrink-0 bg-zinc-950" />
+                    <div className="w-16 aspect-[3/4] flex-shrink-0 bg-zinc-100" />
                   )}
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-white/70 tracking-[0.15em] uppercase mb-1 truncate">
+                    <p className="text-xs text-black/80 tracking-[0.15em] uppercase mb-1 truncate">
                       {item.name}
                     </p>
                     {item.attributes?.map((a) => (
                       <p
                         key={a.name}
-                        className="text-[10px] text-white/25 tracking-[0.2em] uppercase"
+                        className="text-[10px] text-black/40 tracking-[0.2em] uppercase"
                       >
                         {a.option}
                       </p>
                     ))}
-                    <p className="text-xs text-white/40 mt-2">
+                    <p className="text-xs text-black/60 mt-2">
                       €{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
@@ -114,23 +116,23 @@ export default function CartPage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => updateQty(i, -1)}
-                        className="text-white/30 hover:text-white/70 text-sm w-5 text-center transition-colors"
+                        className="text-black/40 hover:text-black text-sm w-5 text-center transition-colors"
                       >
                         −
                       </button>
-                      <span className="text-xs text-white/60 w-4 text-center">
+                      <span className="text-xs text-black/70 w-4 text-center">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQty(i, 1)}
-                        className="text-white/30 hover:text-white/70 text-sm w-5 text-center transition-colors"
+                        className="text-black/40 hover:text-black text-sm w-5 text-center transition-colors"
                       >
                         +
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(i)}
-                      className="text-[10px] text-white/15 hover:text-white/40 tracking-[0.2em] uppercase transition-colors"
+                      className="text-[10px] text-black/30 hover:text-black tracking-[0.2em] uppercase transition-colors"
                     >
                       Remove
                     </button>
@@ -141,19 +143,19 @@ export default function CartPage() {
 
             {/* Summary */}
             <div className="flex justify-between items-baseline mb-8">
-              <p className="text-[10px] text-white/25 tracking-[0.4em] uppercase">
+              <p className="text-[10px] text-black/40 tracking-[0.4em] uppercase">
                 Total
               </p>
-              <p className="text-sm text-white">€{total.toFixed(2)}</p>
+              <p className="text-sm text-black">€{total.toFixed(2)}</p>
             </div>
 
             {/* Checkout CTA */}
             <button
               onClick={() => router.push("/checkout")}
               className="
-                w-full text-xs tracking-[0.4em] uppercase py-4 border
-                border-white/20 text-white/60
-                hover:border-white/50 hover:text-white
+                w-full text-xs tracking-[0.15em] uppercase py-4
+                bg-black text-white
+                hover:bg-black/80
                 transition-all duration-200
               "
             >

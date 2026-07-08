@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
-export default function LandingPage() {
+function LandingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loginError = searchParams.get("error") === "signup_required";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,8 +36,10 @@ export default function LandingPage() {
       };
 
       if (data.valid) {
-        // Save gym info for the auth step
-        sessionStorage.setItem("sect_code", code.trim().toUpperCase());
+        // Persist to localStorage (not sessionStorage) so the gym lock
+        // survives across tabs/devices for the "always signed in" flow
+        localStorage.setItem("sect_code", code.trim().toUpperCase());
+        localStorage.setItem("sect_auth_intent", "signup");
         if (data.gym_id) localStorage.setItem("sect_gym_id", data.gym_id);
         if (data.gym_name) localStorage.setItem("sect_gym_name", data.gym_name);
         router.push("/auth");
@@ -50,16 +56,17 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
-      {/* Logo mark */}
-      <div className="mb-16 select-none" aria-hidden>
-        <SectMark />
-      </div>
-
+    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       {/* Tagline */}
-      <p className="text-xs text-white/30 tracking-[0.4em] uppercase mb-12 text-center">
+      <p className="text-sm text-black/40 tracking-[0.35em] uppercase mb-12 text-center">
         Wear it like you earned it
       </p>
+
+      {loginError && (
+        <p className="text-xs text-red-600 tracking-[0.1em] text-center mb-6 max-w-xs">
+          Please enter your gym&apos;s code to create an account first.
+        </p>
+      )}
 
       {/* Code input form */}
       <form
@@ -82,18 +89,18 @@ export default function LandingPage() {
             spellCheck={false}
             disabled={loading}
             className="
-              w-full bg-transparent border-b border-white/20
-              text-white text-sm tracking-[0.3em] text-center
-              placeholder:text-white/20 placeholder:tracking-[0.25em]
+              w-full bg-transparent border-b border-black/20
+              text-black text-base tracking-[0.3em] text-center
+              placeholder:text-black/30 placeholder:tracking-[0.25em]
               py-3 transition-colors
-              focus:border-white/60 focus:outline-none
+              focus:border-black/60 focus:outline-none
               disabled:opacity-40
             "
           />
         </div>
 
         {error && (
-          <p className="text-xs text-red-500/80 tracking-[0.2em] uppercase">
+          <p className="text-xs text-red-600 tracking-[0.2em] uppercase">
             {error}
           </p>
         )}
@@ -102,9 +109,9 @@ export default function LandingPage() {
           type="submit"
           disabled={loading || !code.trim()}
           className="
-            mt-4 text-xs text-white/50 tracking-[0.4em] uppercase
-            border border-white/15 px-8 py-3 w-full
-            hover:text-white hover:border-white/40
+            mt-4 text-sm text-white tracking-[0.4em] uppercase
+            bg-black px-8 py-3 w-full
+            hover:bg-black/80
             disabled:opacity-20 disabled:cursor-not-allowed
             transition-all duration-200
           "
@@ -113,42 +120,32 @@ export default function LandingPage() {
         </button>
       </form>
 
+      {/* Returning member */}
+      <Link
+        href="/login"
+        className="mt-10 text-xs text-black/40 tracking-[0.15em] hover:text-black transition-colors"
+      >
+        Already a member? Log in
+      </Link>
+
       {/* Footer brand */}
-      <p className="absolute bottom-8 text-[10px] text-white/10 tracking-[0.4em] uppercase">
+      <p className="absolute bottom-8 text-xs text-black/25 tracking-[0.4em] uppercase">
         SWEAT SECT
       </p>
     </main>
   );
 }
 
-function SectMark() {
+export default function LandingPage() {
   return (
-    <svg
-      width="52"
-      height="52"
-      viewBox="0 0 52 52"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-white flex items-center justify-center">
+          <span className="text-black/20 text-xs tracking-[0.4em]">—</span>
+        </main>
+      }
     >
-      {/* Outer ring */}
-      <circle cx="26" cy="26" r="24" stroke="white" strokeWidth="0.75" />
-      {/* Inner ring — subtle weight plate reference */}
-      <circle
-        cx="26"
-        cy="26"
-        r="17"
-        stroke="white"
-        strokeWidth="0.4"
-        opacity="0.25"
-      />
-      {/* S-curve — branding iron concept */}
-      <path
-        d="M18 21 C18 15.5 34 15.5 34 21 C34 25.5 18 25.5 18 31 C18 36.5 34 36.5 34 31"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </svg>
+      <LandingContent />
+    </Suspense>
   );
 }
