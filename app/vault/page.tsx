@@ -14,36 +14,38 @@ export default function VaultPage() {
 
   useEffect(() => {
     async function init() {
-      // Guard 1: must have a Supabase session (authenticated user)
-      const supabase = createBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.replace("/");
-        return;
-      }
-
-      // Guard 2: must have a locked gym in localStorage — persists across
-      // tabs/devices. Returning users who land directly on /vault (e.g. a
-      // still-valid Supabase session on a fresh visit) won't have it yet —
-      // restore it from their profile.
+      // Browsing only requires a validated gym code — no account needed.
+      // Signing up is optional (top-right link in GymBar); it just means
+      // "remember my gym, skip the code next time".
       let code = localStorage.getItem("sect_code");
+
+      // No code locally, but maybe a still-valid Supabase session from a
+      // previous signup on this device — restore the gym from their profile
+      // instead of bouncing them back to the code screen.
       if (!code) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("gym_id, gyms(code, name)")
-          .eq("user_id", session.user.id)
-          .single();
-        // supabase-js types joined relations as array; runtime returns object
-        // for a to-one FK — handle both shapes
-        const g = (Array.isArray(profile?.gyms) ? profile?.gyms[0] : profile?.gyms) as
-          | { code: string; name: string }
-          | undefined;
-        if (g?.code) {
-          code = g.code;
-          localStorage.setItem("sect_code", code);
-          localStorage.setItem("sect_gym_name", g.name);
-        } else {
-          // No gym locked — send back to start
+        const supabase = createBrowserClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("gym_id, gyms(code, name)")
+            .eq("user_id", session.user.id)
+            .single();
+          // supabase-js types joined relations as array; runtime returns
+          // object for a to-one FK — handle both shapes
+          const g = (Array.isArray(profile?.gyms) ? profile?.gyms[0] : profile?.gyms) as
+            | { code: string; name: string }
+            | undefined;
+          if (g?.code) {
+            code = g.code;
+            localStorage.setItem("sect_code", code);
+            localStorage.setItem("sect_gym_name", g.name);
+          }
+        }
+
+        if (!code) {
+          // Genuinely no gym context — send back to start
           router.replace("/");
           return;
         }
