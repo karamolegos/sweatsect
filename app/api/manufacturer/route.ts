@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getProducts } from "@/lib/woocommerce";
 
+export const runtime = "edge";
+
 // Server-side Supabase with service role (bypasses RLS for manufacturer writes)
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;

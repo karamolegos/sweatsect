@@ -7,6 +7,8 @@ import type { WCProduct, WCVariation } from "@/types";
 import { ZoomImage } from "@/components/ZoomImage";
 import { GymBar } from "@/components/GymBar";
 
+export const runtime = "edge";
+
 export default function ProductPage() {
   const router = useRouter();
   const params = useParams<{ slug: string }>();
