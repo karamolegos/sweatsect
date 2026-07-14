@@ -37,12 +37,13 @@ function LandingContent() {
 
       if (data.valid) {
         // Persist to localStorage (not sessionStorage) so the gym lock
-        // survives across tabs/devices for the "always signed in" flow
+        // survives across tabs/devices for the "always signed in" flow.
+        // sect_auth_intent is NOT set here — browsing doesn't imply signup;
+        // /auth/page.tsx sets it itself if/when the visitor chooses to sign up.
         localStorage.setItem("sect_code", code.trim().toUpperCase());
-        localStorage.setItem("sect_auth_intent", "signup");
         if (data.gym_id) localStorage.setItem("sect_gym_id", data.gym_id);
         if (data.gym_name) localStorage.setItem("sect_gym_name", data.gym_name);
-        router.push("/auth");
+        router.push("/vault");
       } else {
         setError("Code not recognised.");
         setCode("");
