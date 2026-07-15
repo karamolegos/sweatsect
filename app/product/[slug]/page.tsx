@@ -6,6 +6,7 @@ import Image from "next/image";
 import type { WCProduct, WCVariation } from "@/types";
 import { ZoomImage } from "@/components/ZoomImage";
 import { GymBar } from "@/components/GymBar";
+import { AccordionSection } from "@/components/Accordion";
 
 export const runtime = "edge";
 
@@ -134,6 +135,8 @@ export default function ProductPage() {
     (sizes.length === 0 || (selectedVariation?.stock_status === "instock"));
 
   const activePhoto = product.images?.[activeImage];
+  const materials = product.meta_data?.find((m) => m.key === "_ss_materials")?.value;
+  const care = product.meta_data?.find((m) => m.key === "_ss_care")?.value;
 
   return (
     <main className="min-h-screen bg-white px-6 py-6">
@@ -252,42 +255,66 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* Add to bag + wishlist */}
-            <div className="flex gap-2">
-              <button
-                onClick={addToCart}
-                disabled={!canAdd || adding || (sizes.length > 0 && !selectedSize)}
-                className="
-                  flex-1 text-xs tracking-[0.15em] uppercase py-4
-                  transition-all duration-200
-                  bg-black text-white
-                  hover:bg-black/80
-                  disabled:bg-black/10 disabled:text-black/30 disabled:cursor-not-allowed
-                "
-              >
-                {adding
-                  ? "—"
-                  : !isInStock
-                  ? "Sold Out"
-                  : sizes.length > 0 && !selectedSize
-                  ? "Select Size"
-                  : "Add to Bag"}
-              </button>
-              <button
-                onClick={toggleFavorite}
-                aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
-                className="w-14 flex items-center justify-center border border-black/20 hover:border-black transition-colors"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-[18px] h-[18px]"
-                  fill={saved ? "#000" : "none"}
-                  stroke="#000"
-                  strokeWidth={1.5}
+            <div>
+              {/* Add to bag + wishlist */}
+              <div className="flex gap-2 mb-10">
+                <button
+                  onClick={addToCart}
+                  disabled={!canAdd || adding || (sizes.length > 0 && !selectedSize)}
+                  className="
+                    flex-1 text-xs tracking-[0.15em] uppercase py-4
+                    transition-all duration-200
+                    bg-black text-white
+                    hover:bg-black/80
+                    disabled:bg-black/10 disabled:text-black/30 disabled:cursor-not-allowed
+                  "
                 >
-                  <path d="M12 20.5s-7.5-4.6-10-9.1C.4 8.1 1.8 4.5 5.2 3.6c2-.5 4 .3 5.3 2 .5.6.9 1.3 1.5 1.3s1-.7 1.5-1.3c1.3-1.7 3.3-2.5 5.3-2 3.4.9 4.8 4.5 3.2 7.8-2.5 4.5-10 9.1-10 9.1Z" />
-                </svg>
-              </button>
+                  {adding
+                    ? "—"
+                    : !isInStock
+                    ? "Sold Out"
+                    : sizes.length > 0 && !selectedSize
+                    ? "Select Size"
+                    : "Add to Bag"}
+                </button>
+                <button
+                  onClick={toggleFavorite}
+                  aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}
+                  className="w-14 flex items-center justify-center border border-black/20 hover:border-black transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="w-[18px] h-[18px]"
+                    fill={saved ? "#000" : "none"}
+                    stroke="#000"
+                    strokeWidth={1.5}
+                  >
+                    <path d="M12 20.5s-7.5-4.6-10-9.1C.4 8.1 1.8 4.5 5.2 3.6c2-.5 4 .3 5.3 2 .5.6.9 1.3 1.5 1.3s1-.7 1.5-1.3c1.3-1.7 3.3-2.5 5.3-2 3.4.9 4.8 4.5 3.2 7.8-2.5 4.5-10 9.1-10 9.1Z" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Detail sections */}
+              <div className="border-b border-black/10">
+                {product.description && (
+                  <AccordionSection title="Description" defaultOpen>
+                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                  </AccordionSection>
+                )}
+                {materials && (
+                  <AccordionSection title="Materials & Care">
+                    <p>{materials}</p>
+                    {care && <p>{care}</p>}
+                  </AccordionSection>
+                )}
+                <AccordionSection title="Pickup at your gym">
+                  <p>
+                    No shipping, no couriers. Your order is prepared and delivered
+                    to your gym&apos;s reception desk in a matte black bag with your
+                    name on it. You&apos;ll get an email when it&apos;s ready to collect.
+                  </p>
+                </AccordionSection>
+              </div>
             </div>
           </div>
         </div>

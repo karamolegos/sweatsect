@@ -13,6 +13,7 @@ export interface WCProduct {
   variations: number[];
   stock_status: "instock" | "outofstock" | "onbackorder";
   purchasable: boolean;
+  meta_data?: { key: string; value: string }[];
 }
 
 export interface WCVariation {
