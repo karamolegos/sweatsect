@@ -24,15 +24,15 @@ export function AccordionSection({
         className="w-full flex items-center justify-between py-4 text-left"
         aria-expanded={open}
       >
-        <span className="text-[12px] text-black tracking-[0.15em] uppercase">
+        <span className="text-sm text-black tracking-[0.1em] uppercase font-medium">
           {title}
         </span>
-        <span className="text-black/40 text-base leading-none select-none" aria-hidden>
+        <span className="text-black/40 text-lg leading-none select-none" aria-hidden>
           {open ? "−" : "+"}
         </span>
       </button>
       {open && (
-        <div className="pb-5 text-[13px] text-black/60 leading-relaxed [&_p]:mb-2">
+        <div className="pb-5 text-sm text-black/60 leading-relaxed [&_p]:mb-2">
           {children}
         </div>
       )}

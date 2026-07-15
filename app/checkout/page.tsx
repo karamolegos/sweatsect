@@ -84,12 +84,12 @@ export default function CheckoutPage() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-[10px] text-black/30 tracking-[0.4em] uppercase hover:text-black transition-colors mb-12 block"
+          className="text-sm text-black/40 tracking-[0.05em] uppercase hover:text-black transition-colors mb-12 block"
         >
           ← Back
         </button>
 
-        <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase mb-10">
+        <p className="text-base text-black tracking-[0.15em] uppercase mb-10 font-medium">
           Payment
         </p>
 
@@ -100,19 +100,19 @@ export default function CheckoutPage() {
               key={`${item.product_id}-${item.variation_id ?? 0}`}
               className="flex justify-between"
             >
-              <p className="text-xs text-black/50 tracking-[0.1em]">
+              <p className="text-sm text-black/60">
                 {item.name}
                 {item.attributes?.map((a) => ` / ${a.option}`).join("")}
                 {item.quantity > 1 && ` ×${item.quantity}`}
               </p>
-              <p className="text-xs text-black/50">
+              <p className="text-sm text-black/60">
                 €{(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
           <div className="flex justify-between border-t border-black/10 pt-3 mt-3">
-            <p className="text-xs text-black/70 tracking-[0.2em] uppercase">Total</p>
-            <p className="text-xs text-black">€{total.toFixed(2)}</p>
+            <p className="text-sm text-black/70 uppercase">Total</p>
+            <p className="text-base text-black font-medium">€{total.toFixed(2)}</p>
           </div>
         </div>
 
@@ -126,19 +126,19 @@ export default function CheckoutPage() {
               placeholder="your@email.com"
               className="
                 w-full bg-transparent border-b border-black/20
-                text-black text-sm tracking-[0.1em]
+                text-black text-base
                 placeholder:text-black/30
                 py-3 mb-6 focus:border-black/60 focus:outline-none transition-colors
               "
             />
             {error && (
-              <p className="text-xs text-red-600 tracking-[0.2em] mb-4">{error}</p>
+              <p className="text-sm text-red-600 mb-4">{error}</p>
             )}
             <button
               onClick={initPayment}
               disabled={loading || !email.includes("@")}
               className="
-                w-full text-xs tracking-[0.15em] uppercase py-4
+                w-full text-sm tracking-[0.1em] uppercase py-4 font-medium
                 bg-black text-white
                 hover:bg-black/80
                 disabled:opacity-20 disabled:cursor-not-allowed
@@ -225,13 +225,13 @@ function CheckoutForm({ email }: { email: string }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement />
       {error && (
-        <p className="text-xs text-red-600 tracking-[0.2em]">{error}</p>
+        <p className="text-sm text-red-600">{error}</p>
       )}
       <button
         type="submit"
         disabled={submitting || !stripe}
         className="
-          w-full text-xs tracking-[0.15em] uppercase py-4 mt-4
+          w-full text-sm tracking-[0.1em] uppercase py-4 mt-4 font-medium
           bg-black text-white
           hover:bg-black/80
           disabled:opacity-20 disabled:cursor-not-allowed

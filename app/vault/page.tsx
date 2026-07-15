@@ -216,10 +216,10 @@ function ProductCard({
 
       {/* Product info — price first, then name, then category */}
       <div>
-        <p className="text-[13px] text-black font-medium">
+        <p className="text-[15px] text-black font-medium">
           €{parseFloat(product.price).toFixed(2)}
         </p>
-        <p className="text-[13px] text-black/70 mt-0.5 group-hover:text-black transition-colors">
+        <p className="text-sm text-black/70 mt-1 group-hover:text-black transition-colors">
           {product.name}
         </p>
       </div>

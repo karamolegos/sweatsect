@@ -54,12 +54,12 @@ export default function CartPage() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-[10px] text-black/30 tracking-[0.4em] uppercase hover:text-black transition-colors mb-12 block"
+          className="text-sm text-black/40 tracking-[0.05em] uppercase hover:text-black transition-colors mb-12 block"
         >
           ← Continue Shopping
         </button>
 
-        <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase mb-10">
+        <p className="text-base text-black tracking-[0.15em] uppercase mb-10 font-medium">
           Your Bag
         </p>
 
@@ -95,18 +95,18 @@ export default function CartPage() {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-black/80 tracking-[0.15em] uppercase mb-1 truncate">
+                    <p className="text-sm text-black mb-1 truncate">
                       {item.name}
                     </p>
                     {item.attributes?.map((a) => (
                       <p
                         key={a.name}
-                        className="text-[10px] text-black/40 tracking-[0.2em] uppercase"
+                        className="text-xs text-black/40 uppercase"
                       >
                         {a.option}
                       </p>
                     ))}
-                    <p className="text-xs text-black/60 mt-2">
+                    <p className="text-sm text-black/60 mt-2">
                       €{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
@@ -116,23 +116,23 @@ export default function CartPage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => updateQty(i, -1)}
-                        className="text-black/40 hover:text-black text-sm w-5 text-center transition-colors"
+                        className="text-black/40 hover:text-black text-base w-5 text-center transition-colors"
                       >
                         −
                       </button>
-                      <span className="text-xs text-black/70 w-4 text-center">
+                      <span className="text-sm text-black/70 w-4 text-center">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQty(i, 1)}
-                        className="text-black/40 hover:text-black text-sm w-5 text-center transition-colors"
+                        className="text-black/40 hover:text-black text-base w-5 text-center transition-colors"
                       >
                         +
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(i)}
-                      className="text-[10px] text-black/30 hover:text-black tracking-[0.2em] uppercase transition-colors"
+                      className="text-xs text-black/30 hover:text-black uppercase transition-colors"
                     >
                       Remove
                     </button>
@@ -143,17 +143,17 @@ export default function CartPage() {
 
             {/* Summary */}
             <div className="flex justify-between items-baseline mb-8">
-              <p className="text-[10px] text-black/40 tracking-[0.4em] uppercase">
+              <p className="text-sm text-black/40 tracking-[0.1em] uppercase">
                 Total
               </p>
-              <p className="text-sm text-black">€{total.toFixed(2)}</p>
+              <p className="text-lg text-black font-medium">€{total.toFixed(2)}</p>
             </div>
 
             {/* Checkout CTA */}
             <button
               onClick={() => router.push("/checkout")}
               className="
-                w-full text-xs tracking-[0.15em] uppercase py-4
+                w-full text-sm tracking-[0.1em] uppercase py-4 font-medium
                 bg-black text-white
                 hover:bg-black/80
                 transition-all duration-200

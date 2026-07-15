@@ -29,13 +29,13 @@ export function GymBar() {
 
   return (
     <div className="sticky top-0 z-10 -mx-6 mb-8 bg-white/95 backdrop-blur border-b border-black/10 px-6 py-2.5 flex items-center justify-between">
-      <p className="text-[10px] text-black/50 tracking-[0.3em] uppercase">
+      <p className="text-xs text-black/50 tracking-[0.15em] uppercase">
         {gymName}
       </p>
       {signedIn === true && (
         <Link
           href="/account"
-          className="text-[10px] text-black/50 tracking-[0.2em] uppercase hover:text-black transition-colors"
+          className="text-xs text-black/50 tracking-[0.1em] uppercase hover:text-black transition-colors"
         >
           Account
         </Link>
@@ -43,7 +43,7 @@ export function GymBar() {
       {signedIn === false && (
         <Link
           href="/auth"
-          className="text-[10px] text-black/50 tracking-[0.2em] uppercase hover:text-black transition-colors"
+          className="text-xs text-black/50 tracking-[0.1em] uppercase hover:text-black transition-colors"
         >
           Sign up
         </Link>

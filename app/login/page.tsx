@@ -68,10 +68,10 @@ export default function LoginPage() {
     return (
       <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 page-in">
         <div className="text-center max-w-xs">
-          <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase mb-8">
+          <p className="text-sm text-black tracking-[0.15em] uppercase mb-8 font-medium">
             Check your inbox
           </p>
-          <p className="text-xs text-black/50 tracking-[0.15em] leading-relaxed mb-12">
+          <p className="text-sm text-black/50 leading-relaxed mb-12">
             We sent a link to{" "}
             <span className="text-black/80">{email}</span>.
             <br />
@@ -79,7 +79,7 @@ export default function LoginPage() {
           </p>
           <button
             onClick={() => setSent(false)}
-            className="text-[10px] text-black/30 tracking-[0.4em] uppercase hover:text-black transition-colors"
+            className="text-sm text-black/40 hover:text-black transition-colors"
           >
             Wrong email?
           </button>
@@ -95,7 +95,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 page-in">
       <div className="w-full max-w-xs">
-        <p className="text-[10px] text-black/40 tracking-[0.5em] uppercase text-center mb-10">
+        <p className="text-base text-black tracking-[0.1em] uppercase text-center mb-10 font-medium">
           Log in
         </p>
 
@@ -105,7 +105,7 @@ export default function LoginPage() {
 
         <div className="flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-black/10" />
-          <span className="text-[10px] text-black/30 tracking-[0.2em] uppercase">or</span>
+          <span className="text-xs text-black/30 uppercase">or</span>
           <div className="flex-1 h-px bg-black/10" />
         </div>
 
@@ -123,7 +123,7 @@ export default function LoginPage() {
             disabled={loading}
             className="
               w-full bg-transparent border-b border-black/20
-              text-black text-sm tracking-[0.15em] text-center
+              text-black text-base text-center
               placeholder:text-black/30
               py-3 transition-colors
               focus:border-black/60 focus:outline-none
@@ -132,7 +132,7 @@ export default function LoginPage() {
           />
 
           {error && (
-            <p className="text-xs text-red-600 tracking-[0.1em] text-center">
+            <p className="text-sm text-red-600 text-center">
               {error}
             </p>
           )}
@@ -141,8 +141,8 @@ export default function LoginPage() {
             type="submit"
             disabled={loading || !email.trim()}
             className="
-              mt-4 text-xs text-white tracking-[0.4em] uppercase
-              bg-black px-8 py-3 w-full
+              mt-4 text-sm text-white tracking-[0.2em] uppercase
+              bg-black px-8 py-3 w-full font-medium
               hover:bg-black/80
               disabled:opacity-20 disabled:cursor-not-allowed
               transition-all duration-200
@@ -154,7 +154,7 @@ export default function LoginPage() {
 
         <Link
           href="/"
-          className="block mt-10 text-center text-xs text-black/40 tracking-[0.15em] hover:text-black transition-colors"
+          className="block mt-10 text-center text-sm text-black/40 hover:text-black transition-colors"
         >
           New here? Enter your gym&apos;s code
         </Link>

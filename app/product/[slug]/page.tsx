@@ -145,7 +145,7 @@ export default function ProductPage() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-[11px] text-black/40 tracking-[0.1em] uppercase hover:text-black transition-colors mb-10 block"
+          className="text-sm text-black/40 tracking-[0.05em] uppercase hover:text-black transition-colors mb-10 block"
         >
           ← Back
         </button>
@@ -195,18 +195,18 @@ export default function ProductPage() {
           {/* Product info */}
           <div className="flex flex-col justify-between">
             <div>
-              <p className="text-[11px] text-black/40 tracking-[0.3em] uppercase mb-3">
+              <p className="text-xs text-black/40 tracking-[0.3em] uppercase mb-3">
                 Sweat Sect
               </p>
-              <h1 className="text-lg text-black mb-2">{product.name}</h1>
-              <p className="text-sm text-black/60 mb-8">
+              <h1 className="text-2xl text-black mb-3 leading-tight">{product.name}</h1>
+              <p className="text-lg text-black/70 font-medium mb-8">
                 €{parseFloat(product.price).toFixed(2)}
               </p>
 
               {/* Size selector */}
               {sizes.length > 0 && (
                 <div className="mb-8">
-                  <p className="text-[10px] text-black/40 tracking-[0.3em] uppercase mb-4">
+                  <p className="text-xs text-black/40 tracking-[0.2em] uppercase mb-4 font-medium">
                     Size
                   </p>
                   <div className="flex gap-2 flex-wrap">
@@ -227,7 +227,7 @@ export default function ProductPage() {
                           onClick={() => !outOfStock && setSelectedSize(size)}
                           disabled={!!outOfStock}
                           className={`
-                            text-[12px] px-4 py-2 border
+                            text-sm px-5 py-2.5 border min-w-[52px]
                             transition-all duration-150
                             ${
                               selectedSize === size
@@ -249,7 +249,7 @@ export default function ProductPage() {
               {/* Short description */}
               {product.short_description && (
                 <div
-                  className="text-[13px] text-black/50 leading-relaxed mb-8 [&_p]:mb-2"
+                  className="text-sm text-black/50 leading-relaxed mb-8 [&_p]:mb-2"
                   dangerouslySetInnerHTML={{ __html: product.short_description }}
                 />
               )}
@@ -262,7 +262,7 @@ export default function ProductPage() {
                   onClick={addToCart}
                   disabled={!canAdd || adding || (sizes.length > 0 && !selectedSize)}
                   className="
-                    flex-1 text-xs tracking-[0.15em] uppercase py-4
+                    flex-1 text-sm tracking-[0.1em] uppercase py-4 font-medium
                     transition-all duration-200
                     bg-black text-white
                     hover:bg-black/80

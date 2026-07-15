@@ -124,7 +124,7 @@ function LandingContent() {
       {/* Returning member */}
       <Link
         href="/login"
-        className="mt-10 text-xs text-black/40 tracking-[0.15em] hover:text-black transition-colors"
+        className="mt-10 text-sm text-black/40 hover:text-black transition-colors"
       >
         Already a member? Log in
       </Link>
