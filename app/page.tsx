@@ -3,6 +3,7 @@
 import { Suspense, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 function LandingContent() {
   const router = useRouter();
@@ -57,14 +58,24 @@ function LandingContent() {
   }
 
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
+    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
+      {/* Wordmark */}
+      <Image
+        src="/sweat-sect-wordmark.svg"
+        alt="Sweat Sect"
+        width={1200}
+        height={260}
+        priority
+        className="w-64 sm:w-80 md:w-[420px] h-auto mb-8"
+      />
+
       {/* Tagline */}
-      <p className="text-sm text-black/40 tracking-[0.35em] uppercase mb-12 text-center">
+      <p className="text-base sm:text-lg text-black/40 tracking-[0.35em] uppercase mb-20 text-center">
         Wear it like you earned it
       </p>
 
       {loginError && (
-        <p className="text-xs text-red-600 tracking-[0.1em] text-center mb-6 max-w-xs">
+        <p className="text-sm text-red-600 tracking-[0.1em] text-center mb-8 max-w-sm">
           Please enter your gym&apos;s code to create an account first.
         </p>
       )}
@@ -72,7 +83,7 @@ function LandingContent() {
       {/* Code input form */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xs flex flex-col items-center gap-4"
+        className="w-full max-w-sm flex flex-col items-center gap-6"
       >
         <div className="w-full">
           <input
@@ -91,9 +102,9 @@ function LandingContent() {
             disabled={loading}
             className="
               w-full bg-transparent border-b border-black/20
-              text-black text-base tracking-[0.3em] text-center
+              text-black text-lg tracking-[0.3em] text-center
               placeholder:text-black/30 placeholder:tracking-[0.25em]
-              py-3 transition-colors
+              py-4 transition-colors
               focus:border-black/60 focus:outline-none
               disabled:opacity-40
             "
@@ -101,7 +112,7 @@ function LandingContent() {
         </div>
 
         {error && (
-          <p className="text-xs text-red-600 tracking-[0.2em] uppercase">
+          <p className="text-sm text-red-600 tracking-[0.2em] uppercase">
             {error}
           </p>
         )}
@@ -110,8 +121,8 @@ function LandingContent() {
           type="submit"
           disabled={loading || !code.trim()}
           className="
-            mt-4 text-sm text-white tracking-[0.4em] uppercase
-            bg-black px-8 py-3 w-full
+            mt-6 text-base text-white tracking-[0.4em] uppercase
+            bg-black px-8 py-4 w-full
             hover:bg-black/80
             disabled:opacity-20 disabled:cursor-not-allowed
             transition-all duration-200
@@ -124,15 +135,10 @@ function LandingContent() {
       {/* Returning member */}
       <Link
         href="/login"
-        className="mt-10 text-sm text-black/40 hover:text-black transition-colors"
+        className="mt-14 text-base text-black/40 hover:text-black transition-colors"
       >
         Already a member? Log in
       </Link>
-
-      {/* Footer brand */}
-      <p className="absolute bottom-8 text-xs text-black/25 tracking-[0.4em] uppercase">
-        SWEAT SECT
-      </p>
     </main>
   );
 }
