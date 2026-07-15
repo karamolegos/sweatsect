@@ -68,3 +68,15 @@ export async function updateOrder(
     body: JSON.stringify(body),
   });
 }
+
+// WC REST v3 has no meta_key/meta_value filter for orders, so we page
+// through recent orders and filter by _user_id meta ourselves. Fine at
+// this order volume; revisit if it ever gets slow.
+export async function getOrdersByUserId(userId: string): Promise<WCOrder[]> {
+  const orders = await wcFetch<WCOrder[]>(
+    "/orders?per_page=100&orderby=date&order=desc"
+  );
+  return orders.filter((o) =>
+    o.meta_data?.some((m) => m.key === "_user_id" && m.value === userId)
+  );
+}

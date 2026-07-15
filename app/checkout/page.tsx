@@ -11,6 +11,7 @@ import {
 } from "@stripe/react-stripe-js";
 import type { CartItem } from "@/types";
 import { GymBar } from "@/components/GymBar";
+import { createBrowserClient } from "@/lib/supabase";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -41,7 +42,11 @@ export default function CheckoutPage() {
 
     try {
       const gymId = localStorage.getItem("sect_gym_id") || "unknown";
-      const userId = sessionStorage.getItem("sect_user_id") || "guest";
+      // Empty when browsing as a guest (no account required to buy) — order
+      // history on /account only shows up for signed-in purchases.
+      const supabase = createBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user.id ?? "";
 
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",

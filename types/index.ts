@@ -29,6 +29,7 @@ export interface WCOrder {
   number: string;
   status: string;
   total: string;
+  date_created: string;
   line_items: {
     id: number;
     name: string;
@@ -37,6 +38,7 @@ export interface WCOrder {
     total: string;
     image?: { src: string };
   }[];
+  meta_data?: { key: string; value: string }[];
 }
 
 // Supabase types (mirrors DB schema)

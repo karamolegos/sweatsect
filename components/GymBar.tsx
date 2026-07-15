@@ -32,6 +32,14 @@ export function GymBar() {
       <p className="text-[10px] text-black/50 tracking-[0.3em] uppercase">
         {gymName}
       </p>
+      {signedIn === true && (
+        <Link
+          href="/account"
+          className="text-[10px] text-black/50 tracking-[0.2em] uppercase hover:text-black transition-colors"
+        >
+          Account
+        </Link>
+      )}
       {signedIn === false && (
         <Link
           href="/auth"
