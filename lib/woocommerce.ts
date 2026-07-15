@@ -23,8 +23,10 @@ export async function wcFetch<T>(
       "Content-Type": "application/json",
       ...(options?.headers ?? {}),
     },
-    // On Cloudflare Edge, don't cache API responses by default
-    cache: "no-store",
+    // Cloudflare Workers doesn't support the standard `cache` RequestInit
+    // field (throws "not implemented") — use the Cloudflare-specific hint
+    // instead to make sure API responses aren't cached.
+    ...({ cf: { cacheTtl: 0, cacheEverything: false } } as object),
   });
 
   if (!res.ok) {
