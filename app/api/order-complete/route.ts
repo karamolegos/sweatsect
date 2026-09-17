@@ -13,13 +13,28 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    // WooCommerce sends webhook signature in header
-    const secret = req.headers.get("x-wc-webhook-secret");
-    if (secret !== process.env.WC_WEBHOOK_SECRET) {
+    // WooCommerce signs the raw body with the webhook secret (HMAC-SHA256,
+    // base64) in X-WC-Webhook-Signature. It never sends the secret itself.
+    const rawBody = await req.text();
+    const signature = req.headers.get("x-wc-webhook-signature");
+
+    // WooCommerce sends an unsigned `webhook_id=N` ping when a webhook is
+    // created/enabled, just to check connectivity — not a real order event.
+    // It never carries a signature, so let it through as a harmless no-op.
+    if (!signature && /^webhook_id=\d+$/.test(rawBody.trim())) {
+      return NextResponse.json({ ok: true, ping: true });
+    }
+
+    const valid = await verifyWooSignature(
+      rawBody,
+      signature,
+      process.env.WC_WEBHOOK_SECRET!
+    );
+    if (!valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const order = (await req.json()) as WCOrderWebhook;
+    const order = JSON.parse(rawBody) as WCOrderWebhook;
 
     // Only process completed/processing orders
     if (order.status !== "completed" && order.status !== "processing") {
@@ -72,6 +87,30 @@ export async function POST(req: NextRequest) {
     // Return 200 so WooCommerce doesn't keep retrying on non-critical errors
     return NextResponse.json({ ok: false, error: String(err) });
   }
+}
+
+async function verifyWooSignature(
+  rawBody: string,
+  signatureHeader: string | null,
+  secret: string
+): Promise<boolean> {
+  if (!signatureHeader) return false;
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sigBytes = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(rawBody)
+  );
+  const expected = btoa(String.fromCharCode(...new Uint8Array(sigBytes)));
+
+  return expected === signatureHeader;
 }
 
 async function sendBrevoEmail({

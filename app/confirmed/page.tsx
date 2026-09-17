@@ -8,15 +8,26 @@ function ConfirmedContent() {
   const searchParams = useSearchParams();
   const [cleared, setCleared] = useState(false);
 
+  const paymentIntent = searchParams.get("payment_intent");
+  const status = searchParams.get("redirect_status");
+  const success = status === "succeeded";
+
   useEffect(() => {
     // Clear cart on confirmed
     sessionStorage.removeItem("sect_cart");
     setCleared(true);
-  }, []);
 
-  const paymentIntent = searchParams.get("payment_intent");
-  const status = searchParams.get("redirect_status");
-  const success = status === "succeeded";
+    // redirect_status is client-supplied; confirm-order re-checks with
+    // Stripe server-side before moving the WC order out of "pending".
+    if (success && paymentIntent) {
+      fetch("/api/confirm-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_intent_id: paymentIntent }),
+      }).catch((err) => console.error("[confirmed] confirm-order failed", err));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!cleared) return null;
 
