@@ -74,16 +74,21 @@ export async function getUserGym(
   return data;
 }
 
-// Write commission after order completes
+// Write commission after order completes. The WooCommerce webhook fires on
+// every status change, so this must stay idempotent per order — and must not
+// overwrite a row already marked paid. First write wins.
 export async function writeCommission(payload: {
   order_id: number;
   gym_id: string;
   amount: number;
 }): Promise<void> {
   const supabase = createServerClient();
-  await supabase.from("commissions").insert({
-    ...payload,
-    status: "pending",
-    created_at: new Date().toISOString(),
-  });
+  await supabase.from("commissions").upsert(
+    {
+      ...payload,
+      status: "pending",
+      created_at: new Date().toISOString(),
+    },
+    { onConflict: "order_id", ignoreDuplicates: true }
+  );
 }
