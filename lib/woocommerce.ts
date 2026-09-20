@@ -61,6 +61,10 @@ export async function createOrder(body: object): Promise<WCOrder> {
   });
 }
 
+export async function getOrder(orderId: number): Promise<WCOrder> {
+  return wcFetch<WCOrder>(`/orders/${orderId}`);
+}
+
 export async function updateOrder(
   orderId: number,
   body: object
